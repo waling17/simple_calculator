@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/vue.js"></script>
+</head>
+<body>
+<div class="mydiv" id="app">
+    <div><h2>简易计算器</h2></div>
+    <div><input type="number" id="input1" v-model="last_num"><input type="button" value="AC" id="btn" @click="clear">
+    </div>
+    <div>
+        <ul id="ul1">
+            <li v-for="(item,index) in list1" @click="setNum(index)" :class="activeNum==index?'active':''">{{item}}</li>
+        </ul>
+        <ul id="ul2">
+            <li v-for="(item,index) in list2" @click="doNum(index)" :class="activeNum==index+9?'active':''">{{item}}
+            </li>
+        </ul>
+    </div>
+</div>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            list1: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            list2: ['+', '-', '*', '/', 'c', '='],
+            last_num: '',
+            num_list: [],
+            comput: '',
+            activeNum: -1
+        },
+        methods: {
+            clear: function () {
+                this.last_num = '';
+                this.num_list = [];
+                this.comput = '';
+                this.activeNum = -1
+            },
+            setNum: function (index) {
+                this.last_num += this.list1[index];
+                this.activeNum = index
+            },
+            doNum: function (index) {
+
+                if (this.last_num == '') {
+                    alert('输入数字后再点击运算符')
+                } else {
+                    this.activeNum = index + 9
+                    if (this.list2[index] == 'c') {
+                        var split_list = this.last_num.split('');
+                        split_list.pop();
+                        this.last_num = split_list.join('')
+                    }
+                    else if (this.list2[index] == '=') {
+                        if (this.num_list.length == 0) {
+                            return this.last_num
+                        } else {
+                            this.num_list.push(this.last_num);
+                            if (this.comput == '+') {
+                                this.last_num = parseInt(this.num_list[0]) + parseInt(this.num_list[1])
+                            } else if (this.comput == '-') {
+                                this.last_num = parseInt(this.num_list[0]) - parseInt(this.num_list[1])
+                            } else if (this.comput == '*') {
+                                this.last_num = parseInt(this.num_list[0]) * parseInt(this.num_list[1])
+                            } else {
+                                this.last_num = parseInt(this.num_list[0]) / parseInt(this.num_list[1])
+                            }
+                            this.num_list = [];
+                            this.comput = ''
+                        }
+                    }
+                    else {
+                        if (this.comput == '') {
+                            this.num_list.push(this.last_num);
+                            this.last_num = '';
+                            this.comput = this.list2[index]
+                        } else {
+                            alert('目前只能做简单的两个数加减乘除，后续功能有待完善')
+                        }
+                    }
+                }
+            }
+        }
+    })
+</script>
+</body>
+</html>
